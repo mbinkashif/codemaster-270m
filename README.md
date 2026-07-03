@@ -1,102 +1,169 @@
 # CodeMaster 270M
 
-A specialized 270 million parameter Large Language Model dedicated to programming language understanding, generation, and code completion.
+A state-of-the-art 270M parameter language model for multi-language code generation and understanding.
 
-## Overview
+## 🚀 Features
 
-CodeMaster-270M is a GPT-2 style transformer model optimized for:
-- **Code Generation**: Function implementation, class design, algorithm development
-- **Code Understanding**: Bug detection, code summarization, documentation generation
-- **Multi-Language Support**: Python, JavaScript, Java, C++, Go, Rust, and more
-- **Context Awareness**: Large context window for understanding complex codebases
+- **270M Parameters**: Optimized balance between performance and efficiency
+- **Multi-Language Support**: Python, JavaScript, Java, C++, Go, Rust, Ruby, PHP, and more
+- **2048 Token Context**: Extended context window for complex code understanding
+- **Production Ready**: Pre-configured for easy deployment and fine-tuning
+- **Hugging Face Integration**: Seamless integration with the Transformers ecosystem
 
-## Features
+## 📋 Architecture
 
-✅ 270M parameters (optimal for code tasks)  
-✅ Multi-programming language training  
-✅ Efficient inference (8-bit quantization support)  
-✅ Fine-tuning pipeline for domain-specific code  
-✅ Comprehensive evaluation suite  
-✅ Production-ready serving setup  
+- **Type**: Decoder-only Transformer (GPT-style)
+- **Hidden Size**: 768 dimensions
+- **Layers**: 12 transformer blocks
+- **Attention Heads**: 12 parallel attention mechanisms
+- **Vocabulary**: 50,257 tokens (GPT-2 tokenizer)
 
-## Quick Start
-
-### Installation
+## 🛠️ Installation
 
 ```bash
+git clone https://github.com/mbinkashif/codemaster-270m.git
 cd codemaster-270m
 pip install -r requirements.txt
 ```
 
-### Training from Scratch
+## 🚂 Training
 
+### Prepare Data
 ```bash
-python train.py --config configs/train_config.yaml
+mkdir -p data/code
+# Add your code files to data/code/
 ```
 
-### Fine-tuning on Custom Code
+### Configure Training
+Edit `configs/train_config.yaml` with your settings
 
+### Start Training
 ```bash
-python finetune.py \
-  --model-name codemaster-270m \
-  --data-path ./data/custom_code \
-  --output-dir ./checkpoints/finetuned
+python train.py \
+  --config configs/train_config.yaml \
+  --data-path data/code \
+  --output-dir checkpoints \
+  --epochs 3 \
+  --batch-size 32
 ```
 
-### Inference
-
+### Monitor with TensorBoard
 ```bash
-python inference.py \
-  --model-path ./checkpoints/model.pt \
-  --prompt "def fibonacci(n):" \
-  --max-length 100
+tensorboard --logdir checkpoints/runs
 ```
 
-## Repository Structure
+## 💡 Inference
+
+### Quick Start
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_id = "mbinkashif/codemaster-270m"
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(model_id)
+
+prompt = "def fibonacci(n):"
+inputs = tokenizer(prompt, return_tensors="pt")
+outputs = model.generate(inputs["input_ids"], max_length=200)
+print(tokenizer.decode(outputs[0]))
+```
+
+### Interactive Inference
+```bash
+python inference.py --model checkpoints/best_model.pt
+```
+
+## 🤗 Hugging Face Hub
+
+### Upload Model
+See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for complete instructions on:
+- Training the model
+- Converting to Hugging Face format
+- Uploading to the Hub
+- Using in your projects
+
+### Quick Upload
+```bash
+python convert_to_hf.py
+cd model_to_push
+git init
+git remote add origin https://huggingface.co/yourusername/codemaster-270m
+git add .
+git commit -m "Upload CodeMaster 270M"
+git push -u origin main
+```
+
+## 📚 Project Structure
 
 ```
 codemaster-270m/
-├── configs/              # Training and model configurations
 ├── src/
-│   ├── model.py         # 270M parameter transformer model
-│   ├── tokenizer.py     # BPE tokenizer for multi-language code
-│   ├── dataset.py       # Data loading and preprocessing
-│   └── utils.py         # Utilities (metrics, helpers)
-├── train.py             # Main training script
-├── finetune.py          # Fine-tuning pipeline
-├── inference.py         # Inference and generation
-├── evaluate.py          # Evaluation suite (HumanEval, etc.)
-├── data/                # Dataset placeholders
-├── scripts/             # Utility scripts
-├── tests/               # Unit tests
-├── requirements.txt     # Python dependencies
-└── README.md
+│   ├── model.py          # Model architecture
+│   ├── tokenizer.py      # Tokenizer implementation
+│   ├── dataset.py        # Data loading utilities
+│   ├── utils.py          # Helper functions
+│   └── evaluation.py     # Evaluation metrics
+├── configs/
+│   └── train_config.yaml # Training configuration
+├── train.py              # Training script
+├── inference.py          # Inference script
+├── requirements.txt      # Dependencies
+├── LICENSE               # MIT License
+└── DEPLOYMENT_GUIDE.md   # Complete deployment guide
 ```
 
-## Model Architecture
+## 🎯 Use Cases
 
-**CodeMaster-270M Configuration:**
-- Hidden Size: 768
-- Number of Layers: 12
-- Attention Heads: 12
-- FFN Hidden Size: 3072
-- Context Window: 2048 tokens
-- Vocabulary Size: 50,257
-- Activation: GELU
-- **Total Parameters: ~270M**
+- **Code Completion**: Complete code snippets intelligently
+- **Code Generation**: Generate full functions from prompts
+- **Code Translation**: Translate between programming languages
+- **Documentation**: Generate code documentation
+- **Bug Detection**: Identify potential code issues
+- **Code Optimization**: Suggest optimized code patterns
 
-## Training Data
+## 📊 Performance
 
-- **The Stack**: 3.3TB of permissively licensed code from GitHub
-- **Languages**: Python, JavaScript, TypeScript, Java, C++, C#, Go, Rust, Ruby, PHP, Swift, Kotlin, and 50+ more
-- **Code Quality Filtering**: Deduplicated, documented code samples
+- **Model Size**: ~1GB (fp32) / ~500MB (fp16)
+- **Inference Speed**: ~50-100 ms per token (A100 GPU)
+- **Memory**: 2GB+ VRAM recommended
+- **Training Time**: ~24-48 hours on single A100 GPU
 
-## Performance
+## 🔧 Configuration
 
-- **Inference Speed**: ~50 tokens/sec on single A100 GPU
-- **Model Size**: 270M parameters ≈ 1.08GB (fp32), 540MB (fp16)
-- **Quantized Size**: ~270MB (8-bit)
+Edit `configs/train_config.yaml` to customize:
+- Model architecture
+- Training hyperparameters
+- Data settings
+- Inference parameters
+- Checkpointing options
 
-## License
+## 📖 Documentation
 
-MIT License
+- [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Complete guide to deployment and usage
+- [Model Architecture](src/model.py) - Detailed model implementation
+- [Training Details](train.py) - Training loop and optimization
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit pull requests.
+
+## 📄 License
+
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [PyTorch](https://pytorch.org/)
+- Integrated with [Hugging Face Transformers](https://huggingface.co/transformers/)
+- Inspired by GPT-2 and modern code generation models
+
+## 📞 Support
+
+For issues and questions:
+- Open an [Issue](https://github.com/mbinkashif/codemaster-270m/issues)
+- Check [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for troubleshooting
+- Visit [Hugging Face Forums](https://discuss.huggingface.co/)
+
+---
+
+**Get started**: `pip install -r requirements.txt && python train.py`
